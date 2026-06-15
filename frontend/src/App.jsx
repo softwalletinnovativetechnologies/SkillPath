@@ -6,6 +6,9 @@ import Login from "./pages/Login";
 import RoleSelection from "./pages/Register/RoleSelection";
 import StudentRegister from "./pages/Register/StudentRegister";
 import ParentRegister from "./pages/Register/ParentRegister";
+import StudentDashboard from "./pages/StudentDashboard";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -16,15 +19,13 @@ function App() {
 
       <Route path="/register" element={<RoleSelection />} />
 
-      <Route
-        path="/register/student"
-        element={<StudentRegister />}
-      />
+      <Route path="/register/student" element={<StudentRegister />} />
 
-      <Route
-        path="/register/parent"
-        element={<ParentRegister />}
-      />
+      <Route path="/register/parent" element={<ParentRegister />} />
+      <Route path="/student-dashboard" element={<StudentDashboard />} />
+
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
     </Routes>
   );
 }
