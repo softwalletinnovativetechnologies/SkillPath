@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import {
+  registerStudent,
+  sendOtp,
+  verifyOtp,
+} from "../../services/authService";
 
-<h1>HELLO TEST</h1>;
 const StudentRegister = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
   const [formData, setFormData] = useState({
@@ -63,15 +69,95 @@ const StudentRegister = () => {
       desc: "Complete registration",
     },
   ];
-
+  const downloadStudentGuide = () => {
+    window.open("/guides/Student-Welcome-Guide.pdf", "_blank");
+  };
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
+  const handleSendOtp = async () => {
+    try {
+      await sendOtp(formData.email);
+
+      alert("OTP Sent Successfully");
+
+      setStep(2);
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed To Send OTP");
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    try {
+      await verifyOtp(formData.email, formData.otp);
+
+      alert("OTP Verified");
+
+      setStep(3);
+    } catch (error) {
+      alert(error.response?.data?.message || "Invalid OTP");
+    }
+  };
+  const handleStudentRegister = async () => {
+    try {
+      const res = await registerStudent({
+        fullName: formData.fullName,
+        email: formData.email,
+        mobile: formData.mobile,
+        password: formData.password,
+      });
+
+      localStorage.setItem("token", res.data.token);
+
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      alert("Student Registered Successfully");
+      setStep(8);
+    } catch (error) {
+      alert(error.response?.data?.message || "Registration Failed");
+    }
+  };
 
   const nextStep = () => {
+    if (
+      step === 1 &&
+      (!formData.email || !formData.mobile || !formData.password)
+    ) {
+      return alert("Please fill all required fields");
+    }
+
+    if (
+      step === 3 &&
+      (!formData.fullName || !formData.dob || !formData.gender)
+    ) {
+      return alert("Complete Personal Information");
+    }
+
+    if (
+      step === 4 &&
+      (!formData.parentName || !formData.parentEmail || !formData.parentMobile)
+    ) {
+      return alert("Complete Parent Information");
+    }
+
+    if (
+      step === 5 &&
+      (!formData.education || !formData.institute || !formData.stream)
+    ) {
+      return alert("Complete Academic Information");
+    }
+
+    if (step === 6 && !formData.interest) {
+      return alert("Select Career Interest");
+    }
+
+    if (step === 7 && !formData.careerGoal) {
+      return alert("Select Career Goal");
+    }
+
     if (step < 8) {
       setStep(step + 1);
     }
@@ -488,7 +574,7 @@ const StudentRegister = () => {
                           <div className="flex justify-end pt-4">
                             <button
                               type="button"
-                              onClick={nextStep}
+                              onClick={handleSendOtp}
                               className="
           px-10
           py-4
@@ -520,7 +606,7 @@ const StudentRegister = () => {
       text-[#0B2D5C]
       "
                         >
-                          Verify Mobile Number
+                          Verify Email Address
                         </h2>
 
                         <p className="text-gray-500 mt-3">
@@ -528,29 +614,27 @@ const StudentRegister = () => {
                         </p>
 
                         <p className="font-semibold text-[#00B894] mt-2">
-                          {formData.countryCode} {formData.mobile}
+                          {formData.email}
                         </p>
 
                         <div className="mt-12">
                           <div className="flex justify-center gap-4">
-                            {[1, 2, 3, 4, 5, 6].map((item) => (
-                              <input
-                                key={item}
-                                type="text"
-                                maxLength="1"
-                                className="
-            w-16
-            h-16
-            border
-            rounded-2xl
-            text-center
-            text-2xl
-            font-bold
-            outline-none
-            focus:border-[#00B894]
-            "
-                              />
-                            ))}
+                            <input
+                              type="text"
+                              name="otp"
+                              value={formData.otp}
+                              onChange={handleChange}
+                              maxLength={6}
+                              placeholder="Enter OTP"
+                              className="
+  w-full
+  border
+  rounded-2xl
+  p-5
+  text-center
+  text-2xl
+  "
+                            />
                           </div>
 
                           <div className="text-center mt-8">
@@ -585,7 +669,7 @@ const StudentRegister = () => {
                             </h4>
 
                             <p className="text-gray-600 mt-2">
-                              Mobile verification helps us secure your account
+                              Email verification helps us secure your account
                               and enables login notifications.
                             </p>
                           </div>
@@ -608,7 +692,7 @@ const StudentRegister = () => {
 
                           <button
                             type="button"
-                            onClick={nextStep}
+                            onClick={handleVerifyOtp}
                             className="
         px-10
         py-4
@@ -1504,7 +1588,7 @@ const StudentRegister = () => {
 
                           <button
                             type="button"
-                            onClick={nextStep}
+                            onClick={handleStudentRegister}
                             className="
         px-10
         py-4
@@ -1640,34 +1724,35 @@ const StudentRegister = () => {
                         <div className="flex flex-wrap justify-center gap-5 mt-12">
                           <button
                             type="button"
+                            onClick={downloadStudentGuide}
                             className="
-        px-8
-        py-4
-        border
-        rounded-2xl
-        font-semibold
-        hover:bg-gray-50
-        transition-all
-        "
+  px-8
+  py-4
+  border
+  rounded-2xl
+  font-semibold
+  hover:bg-gray-50
+  transition-all
+  "
                           >
                             Download Welcome Guide
                           </button>
 
                           <button
                             type="button"
-                            onClick={() => alert("Redirecting to dashboard...")}
+                            onClick={() => navigate("/login")}
                             className="
-        px-10
-        py-4
-        rounded-2xl
-        bg-[#0B2D5C]
-        text-white
-        font-semibold
-        hover:scale-105
-        transition-all
-        "
+  px-10
+  py-4
+  rounded-2xl
+  bg-[#0B2D5C]
+  text-white
+  font-semibold
+  hover:scale-105
+  transition-all
+  "
                           >
-                            Go To Dashboard
+                            Go To Login
                           </button>
                         </div>
                       </motion.div>

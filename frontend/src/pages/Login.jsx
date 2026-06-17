@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../services/authService";
 
 const Login = () => {
   const [role, setRole] = useState("student");
@@ -9,7 +11,7 @@ const Login = () => {
     email: "",
     password: "",
   });
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -17,65 +19,61 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(role, formData);
+    try {
+      const res = await loginUser({
+        email: formData.email,
+        password: formData.password,
+        role,
+      });
+
+      localStorage.setItem("token", res.data.token);
+
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      if (role === "student") {
+        navigate("/student-dashboard");
+      } else {
+        navigate("/parent-dashboard");
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Login Failed");
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] flex items-center justify-center p-6">
-
       <div className="w-full max-w-5xl bg-white rounded-[32px] shadow-xl overflow-hidden">
-
         <div className="grid lg:grid-cols-2">
-
           {/* Left Side */}
 
           <div className="bg-[#0B2D5C] text-white p-12">
-
-            <h1 className="text-5xl font-black">
-              SkillPath
-            </h1>
+            <h1 className="text-5xl font-black">SkillPath</h1>
 
             <p className="mt-6 text-white/80 text-lg">
-              AI Powered Learning, Certifications,
-              Internships and Career Growth Platform.
+              AI Powered Learning, Certifications, Internships and Career Growth
+              Platform.
             </p>
 
             <div className="mt-12 space-y-5">
+              <div>Personalized Learning Paths</div>
 
-              <div>
-                Personalized Learning Paths
-              </div>
+              <div>AI Mentor Support</div>
 
-              <div>
-                AI Mentor Support
-              </div>
+              <div>Internship Opportunities</div>
 
-              <div>
-                Internship Opportunities
-              </div>
+              <div>Industry Certifications</div>
 
-              <div>
-                Industry Certifications
-              </div>
-
-              <div>
-                Career Roadmaps
-              </div>
-
+              <div>Career Roadmaps</div>
             </div>
-
           </div>
 
           {/* Right Side */}
 
           <div className="p-10">
-
-            <h2 className="text-3xl font-bold text-[#0B2D5C]">
-              Welcome Back
-            </h2>
+            <h2 className="text-3xl font-bold text-[#0B2D5C]">Welcome Back</h2>
 
             <p className="text-gray-500 mt-2">
               Login to continue your journey.
@@ -84,7 +82,6 @@ const Login = () => {
             {/* Tabs */}
 
             <div className="flex bg-gray-100 p-1 rounded-xl mt-8">
-
               <button
                 onClick={() => setRole("student")}
                 className={`
@@ -92,11 +89,7 @@ const Login = () => {
                 py-3
                 rounded-lg
                 font-semibold
-                ${
-                  role === "student"
-                    ? "bg-white shadow"
-                    : ""
-                }
+                ${role === "student" ? "bg-white shadow" : ""}
                 `}
               >
                 Student
@@ -109,24 +102,15 @@ const Login = () => {
                 py-3
                 rounded-lg
                 font-semibold
-                ${
-                  role === "parent"
-                    ? "bg-white shadow"
-                    : ""
-                }
+                ${role === "parent" ? "bg-white shadow" : ""}
                 `}
               >
                 Parent
               </button>
-
             </div>
 
-            <form
-              onSubmit={handleSubmit}
-              className="mt-8"
-            >
-                              <div className="space-y-5">
-
+            <form onSubmit={handleSubmit} className="mt-8">
+              <div className="space-y-5">
                 <input
                   type="email"
                   name="email"
@@ -162,17 +146,12 @@ const Login = () => {
                   focus:border-[#00B894]
                   "
                 />
-
               </div>
 
               <div className="flex justify-between items-center mt-5">
-
                 <label className="flex items-center gap-2 text-sm text-gray-600">
-
                   <input type="checkbox" />
-
                   Remember Me
-
                 </label>
 
                 <button
@@ -185,7 +164,6 @@ const Login = () => {
                 >
                   Forgot Password?
                 </button>
-
               </div>
 
               <button
@@ -206,15 +184,11 @@ const Login = () => {
               </button>
 
               <div className="flex items-center gap-4 mt-8">
-
                 <div className="flex-1 h-[1px] bg-gray-200"></div>
 
-                <span className="text-gray-400 text-sm">
-                  OR
-                </span>
+                <span className="text-gray-400 text-sm">OR</span>
 
                 <div className="flex-1 h-[1px] bg-gray-200"></div>
-
               </div>
 
               <button
@@ -233,9 +207,7 @@ const Login = () => {
               </button>
 
               <p className="text-center text-gray-600 mt-8">
-
                 Don't have an account?
-
                 <Link
                   to="/register"
                   className="
@@ -246,17 +218,11 @@ const Login = () => {
                 >
                   Register Now
                 </Link>
-
               </p>
-
             </form>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 };
