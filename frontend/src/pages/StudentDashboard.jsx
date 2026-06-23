@@ -1,6 +1,40 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { motion } from "framer-motion";
 
 const StudentDashboard = () => {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  const fetchDashboard = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        "http://localhost:8003/api/student/dashboard",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      setData(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (!data) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Loading Dashboard...
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-[#F5F8FC]">
       <div className="flex">
@@ -71,7 +105,10 @@ const StudentDashboard = () => {
               to-[#00B894]
               "
             >
-              <h2 className="text-5xl font-black">Welcome Back, Student</h2>
+              <h2 className="text-5xl font-black">
+                Welcome Back,
+                {data.student.fullName}
+              </h2>
 
               <p className="mt-4 text-xl">
                 Continue your AI-powered learning journey.
@@ -82,20 +119,20 @@ const StudentDashboard = () => {
           <div className="grid md:grid-cols-4 gap-6 mt-8">
             {[
               {
-                title: "Course Progress",
-                value: "68%",
+                title: "Performance",
+                value: `${data.student.performance}%`,
               },
               {
                 title: "Attendance",
-                value: "92%",
+                value: `${data.student.attendance}%`,
               },
               {
-                title: "Skill Score",
-                value: "810",
+                title: "Career Score",
+                value: data.student.careerScore,
               },
               {
-                title: "Leaderboard",
-                value: "#12",
+                title: "Certificates",
+                value: data.certifications.length,
               },
             ].map((card) => (
               <div
@@ -142,7 +179,8 @@ const StudentDashboard = () => {
               </h3>
 
               <p className="mt-4 text-gray-600">
-                Recommended next skill: Full Stack Development
+                Recommended Career:
+                {data.student.aiCareerMatch}
               </p>
             </div>
 
@@ -164,7 +202,10 @@ const StudentDashboard = () => {
                 Internship Eligibility
               </h3>
 
-              <p className="mt-4 text-gray-600">Eligible for 5 internships.</p>
+              <p className="mt-4 text-gray-600">
+                {data.internships.length}
+                Internships Available
+              </p>
             </div>
 
             <div
@@ -186,7 +227,10 @@ const StudentDashboard = () => {
               </h3>
 
               <p className="mt-4 text-gray-600">
-                Web Developer → Full Stack → Software Engineer
+                Career Score:
+                {data.student.careerScore}
+                AI Match:
+                {data.student.aiCareerMatch}
               </p>
             </div>
           </div>

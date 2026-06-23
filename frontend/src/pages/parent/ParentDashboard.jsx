@@ -1,72 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import {
-  LayoutDashboard,
-  GraduationCap,
-  CalendarCheck,
-  FileText,
-  Award,
-  Briefcase,
-  Brain,
-  Bell,
-  Settings,
-  LogOut,
-  Search,
-} from "lucide-react";
+import { Bell, Search } from "lucide-react";
 
 const ParentDashboard = () => {
-  const [active, setActive] = useState("dashboard");
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const menuItems = [
-    {
-      id: "dashboard",
-      title: "Dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      id: "student",
-      title: "My Child",
-      icon: GraduationCap,
-    },
-    {
-      id: "attendance",
-      title: "Attendance",
-      icon: CalendarCheck,
-    },
-    {
-      id: "assessments",
-      title: "Assessments",
-      icon: FileText,
-    },
-    {
-      id: "certifications",
-      title: "Certifications",
-      icon: Award,
-    },
-    {
-      id: "internships",
-      title: "Internships",
-      icon: Briefcase,
-    },
-    {
-      id: "ai",
-      title: "AI Insights",
-      icon: Brain,
-    },
-    {
-      id: "notifications",
-      title: "Notifications",
-      icon: Bell,
-    },
-    {
-      id: "settings",
-      title: "Settings",
-      icon: Settings,
-    },
-  ];
   useEffect(() => {
     fetchDashboard();
   }, []);
@@ -91,6 +31,7 @@ const ParentDashboard = () => {
       setLoading(false);
     }
   };
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -99,80 +40,21 @@ const ParentDashboard = () => {
     );
   }
   return (
-    <div className="min-h-screen bg-[#F5F8FC] flex">
-      {/* SIDEBAR */}
-
-      <div className="w-[300px] bg-white border-r shadow-sm">
-        <div className="p-8 border-b">
-          <h1 className="text-3xl font-black text-[#0B2D5C]">SkillPath</h1>
-
-          <p className="text-gray-500 mt-2">Parent Portal</p>
-        </div>
-
-        <div className="p-5">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActive(item.id)}
-                className={`
-                w-full
-                flex
-                items-center
-                gap-4
-                p-4
-                rounded-2xl
-                mb-3
-                transition-all
-                ${
-                  active === item.id
-                    ? "bg-[#0B2D5C] text-white"
-                    : "hover:bg-slate-100"
-                }
-                `}
-              >
-                <Icon size={20} />
-
-                {item.title}
-              </button>
-            );
-          })}
-
-          <button
-            className="
-            w-full
-            mt-10
-            flex
-            items-center
-            gap-4
-            p-4
-            rounded-2xl
-            text-red-500
-            hover:bg-red-50
-            "
-          >
-            <LogOut size={20} />
-            Logout
-          </button>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-[#F5F8FC]">
       {/* MAIN */}
 
-      <div className="flex-1">
+      <div>
         {/* TOPBAR */}
 
-        <div className="bg-white border-b px-10 py-5">
-          <div className="flex justify-between items-center">
+        <div className="bg-white rounded-[32px] shadow-lg p-8 mb-8">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
             <div>
-              <h2 className="text-3xl font-black text-[#0B2D5C]">
+              <h1 className="text-5xl font-black text-[#0B2D5C]">
                 Parent Dashboard
-              </h2>
+              </h1>
 
-              <p className="text-gray-500">
-                Monitor your child's complete growth
+              <p className="text-gray-500 mt-3 text-lg">
+                Monitor your child's complete growth journey
               </p>
             </div>
 
@@ -181,33 +63,33 @@ const ParentDashboard = () => {
                 <Search
                   size={18}
                   className="
-                  absolute
-                  left-4
-                  top-4
-                  text-gray-400
-                  "
+          absolute
+          left-4
+          top-4
+          text-gray-400
+          "
                 />
 
                 <input
                   placeholder="Search..."
                   className="
-                  pl-12
-                  pr-5
-                  py-3
-                  rounded-2xl
-                  border
-                  w-[280px]
-                  "
+          pl-12
+          pr-5
+          py-3
+          rounded-2xl
+          border
+          w-[300px]
+          "
                 />
               </div>
 
               <button
                 className="
-                p-3
-                rounded-2xl
-                bg-white
-                border
-                "
+        p-4
+        rounded-2xl
+        border
+        hover:bg-slate-50
+        "
               >
                 <Bell />
               </button>
@@ -238,7 +120,7 @@ const ParentDashboard = () => {
             shadow-xl
             "
           >
-            <h1 className="text-5xl font-black">Welcome Here</h1>
+            <h1 className="text-5xl font-black">Welcome Parent</h1>
 
             <p className="mt-4 text-xl text-white/80">
               Track your child's learning, performance, certifications and
@@ -307,7 +189,94 @@ const ParentDashboard = () => {
               </div>
             </div>
           </motion.div>
+          <div className="grid lg:grid-cols-3 gap-8 mt-8">
+            <div
+              className="
+    bg-white
+    rounded-[32px]
+    p-8
+    shadow-lg
+    "
+            >
+              <h3 className="text-xl font-bold text-[#0B2D5C]">
+                Parent Account
+              </h3>
 
+              <div className="mt-6">
+                <div
+                  className="
+        w-20
+        h-20
+        rounded-full
+        bg-gradient-to-r
+        from-[#0B2D5C]
+        to-[#17498D]
+        "
+                />
+
+                <h2
+                  className="
+        text-2xl
+        font-black
+        mt-5
+        text-[#0B2D5C]
+        "
+                >
+                  Parent User
+                </h2>
+
+                <p className="text-gray-500">Active Parent Account</p>
+              </div>
+            </div>
+
+            <div
+              className="
+    lg:col-span-2
+    bg-white
+    rounded-[32px]
+    p-8
+    shadow-lg
+    "
+            >
+              <h3 className="text-2xl font-black text-[#0B2D5C]">
+                Child Overview
+              </h3>
+
+              <div className="grid md:grid-cols-4 gap-5 mt-8">
+                <div className="bg-slate-50 p-5 rounded-2xl">
+                  <p className="text-gray-500">Student</p>
+
+                  <h4 className="font-black text-xl mt-2">
+                    {student?.fullName}
+                  </h4>
+                </div>
+
+                <div className="bg-slate-50 p-5 rounded-2xl">
+                  <p className="text-gray-500">Career Match</p>
+
+                  <h4 className="font-black text-xl mt-2">
+                    {student?.aiCareerMatch}
+                  </h4>
+                </div>
+
+                <div className="bg-slate-50 p-5 rounded-2xl">
+                  <p className="text-gray-500">Score</p>
+
+                  <h4 className="font-black text-xl mt-2">
+                    {student?.careerScore || 0}%
+                  </h4>
+                </div>
+
+                <div className="bg-slate-50 p-5 rounded-2xl">
+                  <p className="text-gray-500">Performance</p>
+
+                  <h4 className="font-black text-xl mt-2">
+                    {student?.performance || 0}%
+                  </h4>
+                </div>
+              </div>
+            </div>
+          </div>
           {/* AI INSIGHTS */}
 
           <div className="grid lg:grid-cols-3 gap-8 mt-10">
@@ -389,7 +358,9 @@ const ParentDashboard = () => {
                     bg-white
                     "
                   >
-                    <h4 className="font-bold">{student?.dataScientist || "Data Scientist"}</h4>
+                    <h4 className="font-bold">
+                      {student?.dataScientist || "Data Scientist"}
+                    </h4>
 
                     <p className="text-green-600">
                       {student?.dataScientistScore}% Match
@@ -403,7 +374,9 @@ const ParentDashboard = () => {
                     bg-white
                     "
                   >
-                    <h4 className="font-bold">{student?.mlEngineer || "ML Engineer"}</h4>
+                    <h4 className="font-bold">
+                      {student?.mlEngineer || "ML Engineer"}
+                    </h4>
 
                     <p className="text-green-600">
                       {student?.mlEngineerScore}% Match
