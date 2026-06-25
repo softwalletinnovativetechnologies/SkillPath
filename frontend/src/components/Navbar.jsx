@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
+import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,18 +25,51 @@ const Navbar = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    navigate("/");
+
+    window.location.reload();
+  };
+
+  const getDashboardRoute = () => {
+    if (!user) return "/";
+
+    if (user.fullName) {
+      return "/student-dashboard";
+    }
+
+    if (user.parentName) {
+      return "/parent/dashboard";
+    }
+
+    if (user.role === "admin") {
+      return "/admin/dashboard";
+    }
+
+    return "/";
+  };
+
+  const getUserName = () => {
+    if (!user) return "";
+
+    return user.fullName || user.parentName || user.name || "User";
+  };
+
   const menuItems = [
-    {
-      name: "Programs",
-      path: "/programs",
-    },
     {
       name: "Courses",
       path: "/courses",
-    },
-    {
-      name: "AI Mentor",
-      path: "/ai-mentor",
     },
     {
       name: "Internships",
@@ -50,9 +87,17 @@ const Navbar = () => {
 
   return (
     <motion.nav
-      initial={{ y: -120, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.7 }}
+      initial={{
+        y: -120,
+        opacity: 0,
+      }}
+      animate={{
+        y: 0,
+        opacity: 1,
+      }}
+      transition={{
+        duration: 0.7,
+      }}
       className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4"
     >
       <div
@@ -101,15 +146,7 @@ const Navbar = () => {
             </motion.div>
 
             <div>
-              <h2
-                className="
-                text-2xl
-                font-black
-                text-[#0B2D5C]
-                "
-              >
-                SkillPath
-              </h2>
+              <h2 className="text-2xl font-black text-[#0B2D5C]">SkillPath</h2>
 
               <p className="text-sm text-gray-500">Learn • Grow • Succeed</p>
             </div>
@@ -122,16 +159,11 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`
-                relative
-                font-semibold
-                transition-all
-                ${
+                className={`relative font-semibold transition-all ${
                   location.pathname === item.path
                     ? "text-[#00B894]"
                     : "text-[#0B2D5C]"
-                }
-                `}
+                }`}
               >
                 {item.name}
 
@@ -156,52 +188,130 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Desktop Buttons */}
+          {/* Desktop Right */}
 
           <div className="hidden lg:flex items-center gap-4">
-            <Link
-              to="/login"
-              className="
-              px-5
-              py-3
-              rounded-full
-              font-semibold
-              text-[#0B2D5C]
-              hover:bg-gray-100
-              transition-all
-              "
-            >
-              Login
-            </Link>
+            {!user ? (
+              <>
+                <Link
+                  to="/login"
+                  className="
+                  px-5
+                  py-3
+                  rounded-full
+                  font-semibold
+                  text-[#0B2D5C]
+                  hover:bg-gray-100
+                  transition-all
+                  "
+                >
+                  Login
+                </Link>
 
-            <motion.div
-              whileHover={{
-                scale: 1.05,
-              }}
-              whileTap={{
-                scale: 0.95,
-              }}
-            >
-              <Link
-                to="/register"
-                className="
-                px-7
-                py-3
-                rounded-full
-                bg-gradient-to-r
-                from-[#00B894]
-                to-[#00D4AA]
-                text-white
-                font-semibold
-                shadow-lg
-                "
-              >
-                Get Started
-              </Link>
-            </motion.div>
+                <Link
+                  to="/register"
+                  className="
+                  px-7
+                  py-3
+                  rounded-full
+                  bg-gradient-to-r
+                  from-[#00B894]
+                  to-[#00D4AA]
+                  text-white
+                  font-semibold
+                  shadow-lg
+                  "
+                >
+                  Get Started
+                </Link>
+              </>
+            ) : (
+              <div className="relative">
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="
+                  flex
+                  items-center
+                  gap-3
+                  px-4
+                  py-2
+                  rounded-full
+                  bg-white
+                  shadow-lg
+                  "
+                >
+                  <div
+                    className="
+                    w-10
+                    h-10
+                    rounded-full
+                    bg-gradient-to-r
+                    from-[#0B2D5C]
+                    to-[#00B894]
+                    text-white
+                    flex
+                    items-center
+                    justify-center
+                    font-bold
+                    "
+                  >
+                    {getUserName().charAt(0).toUpperCase()}
+                  </div>
+
+                  <span className="font-semibold text-[#0B2D5C]">
+                    {getUserName()}
+                  </span>
+
+                  <ChevronDown size={18} />
+                </button>
+
+                {showProfileMenu && (
+                  <div
+                    className="
+                    absolute
+                    right-0
+                    mt-3
+                    w-64
+                    bg-white
+                    rounded-3xl
+                    shadow-2xl
+                    p-4
+                    "
+                  >
+                    <p className="font-bold text-[#0B2D5C]">{getUserName()}</p>
+
+                    <hr className="my-3" />
+
+                    <button
+                      onClick={() => navigate(getDashboardRoute())}
+                      className="
+                      w-full
+                      text-left
+                      py-3
+                      hover:text-[#00B894]
+                      "
+                    >
+                      Dashboard
+                    </button>
+
+                    <button
+                      onClick={handleLogout}
+                      className="
+                      w-full
+                      text-left
+                      py-3
+                      text-red-500
+                      "
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Mobile Button */}
+          {/* Mobile Menu Button */}
 
           <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden">
             {isOpen ? (
@@ -238,46 +348,47 @@ const Navbar = () => {
                       key={item.name}
                       to={item.path}
                       onClick={() => setIsOpen(false)}
-                      className={`
-                      font-semibold
-                      ${
-                        location.pathname === item.path
-                          ? "text-[#00B894]"
-                          : "text-[#0B2D5C]"
-                      }
-                      `}
                     >
                       {item.name}
                     </Link>
                   ))}
 
-                  <Link
-                    to="/login"
-                    onClick={() => setIsOpen(false)}
-                    className="
-                    text-[#0B2D5C]
-                    font-semibold
-                    "
-                  >
-                    Login
-                  </Link>
+                  {!user ? (
+                    <>
+                      <Link to="/login">Login</Link>
 
-                  <Link
-                    to="/register"
-                    onClick={() => setIsOpen(false)}
-                    className="
-                    bg-gradient-to-r
-                    from-[#00B894]
-                    to-[#00D4AA]
-                    text-white
-                    text-center
-                    py-3
-                    rounded-xl
-                    font-semibold
-                    "
-                  >
-                    Get Started
-                  </Link>
+                      <Link
+                        to="/register"
+                        className="
+                        bg-gradient-to-r
+                        from-[#00B894]
+                        to-[#00D4AA]
+                        text-white
+                        text-center
+                        py-3
+                        rounded-xl
+                        "
+                      >
+                        Get Started
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => navigate(getDashboardRoute())}
+                        className="text-left"
+                      >
+                        Dashboard
+                      </button>
+
+                      <button
+                        onClick={handleLogout}
+                        className="text-left text-red-500"
+                      >
+                        Logout
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>

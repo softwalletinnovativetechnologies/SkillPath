@@ -35,6 +35,11 @@ const AdminLayout = () => {
       path: "/admin/parents",
     },
     {
+      title: "Courses",
+      icon: FileText,
+      path: "/admin/courses",
+    },
+    {
       title: "Attendance",
       icon: CalendarCheck,
       path: "/admin/attendance",

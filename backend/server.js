@@ -11,6 +11,9 @@ import authRoutes from "./routes/authRoutes.js";
 import parentRoutes from "./routes/parentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
+import enrollmentRoutes from "./routes/enrollmentRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 connectDB();
 
 const app = express();
@@ -27,7 +30,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/parent", parentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/student", studentRoutes);
-
+app.use("/api/courses", courseRoutes);
+app.use("/api/enrollment", enrollmentRoutes);
+app.use("/api/payments", paymentRoutes);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

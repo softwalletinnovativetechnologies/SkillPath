@@ -1,8 +1,25 @@
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
 import { TypeAnimation } from "react-type-animation";
 
-import { ArrowRight, BookOpen, Briefcase, Award, Users } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Briefcase,
+  Award,
+  Users,
+  BriefcaseBusiness,
+  LaptopMinimal,
+  BrainCircuit,
+  BadgeCheck,
+  BarChart3,
+  FolderKanban,
+  GraduationCap,
+  Rocket,
+} from "lucide-react";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -28,6 +45,21 @@ const staggerContainer = {
 };
 
 const Home = () => {
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const res = await axios.get("http://localhost:8003/api/courses");
+
+      setCourses(res.data.courses || []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="bg-[#F6F8FB] min-h-screen overflow-hidden relative">
       {/* Floating Background */}
@@ -110,7 +142,7 @@ const Home = () => {
                 shadow-lg
                 "
               >
-                🚀 AI Powered Learning Platform
+                AI Powered Learning Platform
               </motion.div>
 
               <h1
@@ -196,6 +228,9 @@ const Home = () => {
                   font-semibold
                   shadow-xl
                   "
+                  onClick={() => {
+                    window.location.href = "/about";
+                  }}
                 >
                   Start Learning
                 </motion.button>
@@ -216,6 +251,9 @@ const Home = () => {
                   text-[#0B2D5C]
                   font-semibold
                   "
+                  onClick={() => {
+                    window.location.href = "/courses";
+                  }}
                 >
                   Explore Programs
                 </motion.button>
@@ -235,52 +273,6 @@ const Home = () => {
               }}
               className="relative"
             >
-              {/* Floating Card 1 */}
-              <motion.div
-                animate={{
-                  y: [0, -20, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                }}
-                className="
-                absolute
-                top-0
-                -left-10
-                z-20
-                bg-white
-                p-5
-                rounded-3xl
-                shadow-2xl
-                "
-              >
-                🚀 1000+ Hiring Partners
-              </motion.div>
-
-              {/* Floating Card 2 */}
-              <motion.div
-                animate={{
-                  y: [0, 20, 0],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                }}
-                className="
-                absolute
-                bottom-0
-                -right-10
-                z-20
-                bg-white
-                p-5
-                rounded-3xl
-                shadow-2xl
-                "
-              >
-                🎓 50K+ Students
-              </motion.div>
-
               {/* Hero Image */}
               <div
                 className="
@@ -423,29 +415,29 @@ const Home = () => {
               Popular Programs
             </h2>
 
+            <div className="flex justify-center mt-8 mb-10">
+              <Link
+                to="/courses"
+                className="
+    px-6
+    py-3
+    rounded-xl
+    bg-[#0B2D5C]
+    text-white
+    font-semibold
+    "
+              >
+                View All Courses
+              </Link>
+            </div>
+
             <p className="text-gray-500 mt-5 text-lg">
               Learn industry-relevant skills and build your future.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-10">
-            {[
-              {
-                title: "Full Stack Development",
-                image:
-                  "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-              },
-              {
-                title: "Artificial Intelligence",
-                image:
-                  "https://images.unsplash.com/photo-1677442136019-21780ecad995",
-              },
-              {
-                title: "Cyber Security",
-                image:
-                  "https://images.unsplash.com/photo-1510511459019-5dda7724fd87",
-              },
-            ].map((item, index) => (
+            {courses.slice(0, 3).map((item, index) => (
               <motion.div
                 key={index}
                 initial={{
@@ -473,7 +465,11 @@ const Home = () => {
               >
                 <div className="overflow-hidden">
                   <img
-                    src={item.image}
+                    src={
+                      item.thumbnail
+                        ? `http://localhost:8003${item.thumbnail}`
+                        : "https://placehold.co/600x400"
+                    }
                     alt=""
                     className="
                     h-72
@@ -491,104 +487,23 @@ const Home = () => {
                     {item.title}
                   </h3>
 
-                  <p className="mt-4 text-gray-500">
-                    Master real-world industry skills with hands-on learning and
-                    projects.
-                  </p>
+                  <p className="mt-4 text-gray-500">{item.description}</p>
 
-                  <motion.button
-                    whileHover={{
-                      x: 5,
-                    }}
+                  <Link
+                    to={`/courses/${item._id}`}
                     className="
-                    mt-6
-                    flex
-                    items-center
-                    gap-2
-                    text-[#00B894]
-                    font-semibold
-                    "
+  mt-6
+  flex
+  items-center
+  gap-2
+  text-[#00B894]
+  font-semibold
+  "
                   >
-                    Explore Program
+                    View Details
                     <ArrowRight size={18} />
-                  </motion.button>
+                  </Link>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-      {/* Internship Opportunities */}
-      <motion.section
-        variants={fadeUp}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="py-24 px-6"
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-6xl font-black text-[#0B2D5C]">
-              Internship Opportunities
-            </h2>
-
-            <p className="text-gray-500 mt-5 text-lg">
-              Gain real-world experience with industry-leading companies.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              "Frontend Developer",
-              "AI Engineer",
-              "Cyber Security Analyst",
-            ].map((job, index) => (
-              <motion.div
-                key={index}
-                initial={{
-                  opacity: 0,
-                  y: 80,
-                }}
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                whileHover={{
-                  scale: 1.05,
-                  rotateY: 10,
-                }}
-                transition={{
-                  duration: 0.5,
-                }}
-                className="
-                bg-white
-                rounded-[35px]
-                p-8
-                shadow-xl
-                "
-              >
-                <div className="text-5xl mb-6">💼</div>
-
-                <h3 className="text-3xl font-bold text-[#0B2D5C]">{job}</h3>
-
-                <p className="mt-4 text-gray-500">
-                  Remote • Paid Internship • Flexible Hours
-                </p>
-
-                <button
-                  className="
-                  mt-8
-                  px-6
-                  py-3
-                  rounded-xl
-                  bg-[#0B2D5C]
-                  text-white
-                  font-semibold
-                  "
-                >
-                  Apply Now
-                </button>
               </motion.div>
             ))}
           </div>
@@ -613,19 +528,39 @@ const Home = () => {
           <div className="grid md:grid-cols-3 gap-10">
             {[
               {
-                icon: "🤖",
-                title: "AI Learning Paths",
-                desc: "Personalized learning journeys powered by AI.",
+                icon: <BriefcaseBusiness size={42} />,
+                title: "Live Industry Projects",
+                desc: "Work on real client and company projects using modern technologies and industry workflows.",
               },
+
               {
-                icon: "🏆",
+                icon: <LaptopMinimal size={42} />,
+                title: "Hands-On Practical Learning",
+                desc: "Learn by building real applications, solving business problems and creating portfolio-ready projects.",
+              },
+
+              {
+                icon: <BrainCircuit size={42} />,
+                title: "AI Career Guidance",
+                desc: "Get personalized skill recommendations, career paths and future-ready learning suggestions powered by AI.",
+              },
+
+              {
+                icon: <BadgeCheck size={42} />,
                 title: "Industry Certifications",
-                desc: "Earn certificates recognized by employers.",
+                desc: "Earn verified certificates that strengthen your resume and showcase your practical skills.",
               },
+
               {
-                icon: "🚀",
-                title: "Career Growth",
-                desc: "Internships, jobs and recruiter connections.",
+                icon: <Users size={42} />,
+                title: "Expert Mentorship",
+                desc: "Receive guidance from experienced mentors, industry professionals and technical experts.",
+              },
+
+              {
+                icon: <BarChart3 size={42} />,
+                title: "Career Growth Tracking",
+                desc: "Track your progress, skill development, project achievements and career readiness in one place.",
               },
             ].map((item, index) => (
               <motion.div
@@ -693,8 +628,6 @@ const Home = () => {
                 text-center
                 "
               >
-                <div className="text-5xl mb-5">✨</div>
-
                 <h3 className="text-2xl font-bold text-[#0B2D5C]">{item}</h3>
               </motion.div>
             ))}
@@ -712,27 +645,45 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-6xl font-black text-[#0B2D5C]">
-              Success Stories
+              What You'll Achieve
             </h2>
 
             <p className="text-gray-500 mt-5 text-lg">
-              Hear from students who transformed their careers.
+              Build practical skills and prepare for real-world careers.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                name: "Rahul Sharma",
-                text: "SkillPath helped me secure my first internship and improve my technical skills tremendously.",
+                icon: <FolderKanban size={48} />,
+                title: "Build Real Projects",
+                desc: "Work on industry-grade applications and create a strong portfolio.",
               },
               {
-                name: "Priya Verma",
-                text: "The AI learning paths made my journey structured and effective.",
+                icon: <GraduationCap size={48} />,
+                title: "Gain Practical Skills",
+                desc: "Learn technologies and workflows used by modern companies.",
               },
               {
-                name: "Arjun Mehta",
-                text: "Certifications and placement support helped me get hired quickly.",
+                icon: <BriefcaseBusiness size={48} />,
+                title: "Industry Exposure",
+                desc: "Understand real client requirements, teamwork and project delivery.",
+              },
+              {
+                icon: <BadgeCheck size={48} />,
+                title: "Earn Certifications",
+                desc: "Get recognized credentials that validate your skills.",
+              },
+              {
+                icon: <Users size={48} />,
+                title: "Mentor Support",
+                desc: "Learn directly from experienced mentors and professionals.",
+              },
+              {
+                icon: <Rocket size={48} />,
+                title: "Career Readiness",
+                desc: "Prepare yourself for internships, placements and future opportunities.",
               },
             ].map((item, index) => (
               <motion.div
@@ -759,12 +710,10 @@ const Home = () => {
                 shadow-xl
                 "
               >
-                <div className="text-5xl mb-5">⭐</div>
-
-                <p className="text-gray-600 leading-relaxed">"{item.text}"</p>
+                <p className="text-gray-600 leading-relaxed">{item.desc}</p>
 
                 <h4 className="mt-6 text-xl font-bold text-[#0B2D5C]">
-                  {item.name}
+                  {item.title}
                 </h4>
               </motion.div>
             ))}
@@ -862,6 +811,9 @@ const Home = () => {
               relative
               z-10
               "
+              onClick={() => {
+                window.location.href = "/register";
+              }}
             >
               Get Started Now
             </motion.button>

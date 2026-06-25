@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import Admin from "../models/Admin.js";
 import Student from "../models/Student.js";
 import Parent from "../models/Parent.js";
 import Otp from "../models/Otp.js";
@@ -195,18 +195,34 @@ export const verifyOtp = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password } = req.body;
 
     let user;
+    let role;
 
-    if (role === "student") {
-      user = await Student.findOne({
-        email,
-      });
-    } else {
-      user = await Parent.findOne({
-        email,
-      });
+    // Student Check
+    user = await Student.findOne({ email });
+
+    if (user) {
+      role = "student";
+    }
+
+    // Parent Check
+    if (!user) {
+      user = await Parent.findOne({ email });
+
+      if (user) {
+        role = "parent";
+      }
+    }
+
+    // Admin Check
+    if (!user) {
+      user = await Admin.findOne({ email });
+
+      if (user) {
+        role = "admin";
+      }
     }
 
     if (!user) {
@@ -225,8 +241,13 @@ export const loginUser = async (req, res) => {
 
     res.json({
       success: true,
+
       token: generateToken(user._id, role),
-      user,
+
+      user: {
+        ...user.toObject(),
+        role,
+      },
     });
   } catch (error) {
     res.status(500).json({

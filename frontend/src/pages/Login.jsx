@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
 
 const Login = () => {
-  const [role, setRole] = useState("student");
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -23,23 +23,30 @@ const Login = () => {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const res = await loginUser({
         email: formData.email,
         password: formData.password,
-        role,
       });
 
       localStorage.setItem("token", res.data.token);
 
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      if (role === "student") {
+      if (res.data.user.role === "student") {
         navigate("/student-dashboard");
+      } else if (res.data.user.role === "parent") {
+        navigate("/parent/dashboard");
+      } else if (res.data.user.role === "admin") {
+        navigate("/admin/dashboard");
       } else {
-        navigate("/parent-dashboard");
+        navigate("/");
       }
     } catch (err) {
       alert(err.response?.data?.message || "Login Failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,36 +86,6 @@ const Login = () => {
               Login to continue your journey.
             </p>
 
-            {/* Tabs */}
-
-            <div className="flex bg-gray-100 p-1 rounded-xl mt-8">
-              <button
-                onClick={() => setRole("student")}
-                className={`
-                flex-1
-                py-3
-                rounded-lg
-                font-semibold
-                ${role === "student" ? "bg-white shadow" : ""}
-                `}
-              >
-                Student
-              </button>
-
-              <button
-                onClick={() => setRole("parent")}
-                className={`
-                flex-1
-                py-3
-                rounded-lg
-                font-semibold
-                ${role === "parent" ? "bg-white shadow" : ""}
-                `}
-              >
-                Parent
-              </button>
-            </div>
-
             <form onSubmit={handleSubmit} className="mt-8">
               <div className="space-y-5">
                 <input
@@ -116,11 +93,7 @@ const Login = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder={
-                    role === "student"
-                      ? "Student Email / Mobile"
-                      : "Parent Email / Mobile"
-                  }
+                  placeholder="Email Address"
                   className="
                   w-full
                   p-4
@@ -129,6 +102,7 @@ const Login = () => {
                   outline-none
                   focus:border-[#00B894]
                   "
+                  required
                 />
 
                 <input
@@ -145,6 +119,7 @@ const Login = () => {
                   outline-none
                   focus:border-[#00B894]
                   "
+                  required
                 />
               </div>
 
@@ -168,6 +143,7 @@ const Login = () => {
 
               <button
                 type="submit"
+                disabled={loading}
                 className="
                 w-full
                 mt-8
@@ -180,30 +156,7 @@ const Login = () => {
                 transition
                 "
               >
-                Login as {role === "student" ? "Student" : "Parent"}
-              </button>
-
-              <div className="flex items-center gap-4 mt-8">
-                <div className="flex-1 h-[1px] bg-gray-200"></div>
-
-                <span className="text-gray-400 text-sm">OR</span>
-
-                <div className="flex-1 h-[1px] bg-gray-200"></div>
-              </div>
-
-              <button
-                type="button"
-                className="
-                w-full
-                mt-6
-                py-4
-                border
-                rounded-xl
-                font-semibold
-                hover:bg-gray-50
-                "
-              >
-                Continue with Google
+                {loading ? "Logging In..." : "Login"}
               </button>
 
               <p className="text-center text-gray-600 mt-8">

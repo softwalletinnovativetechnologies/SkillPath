@@ -25,58 +25,59 @@ import {
 } from "../controllers/adminController.js";
 
 import protect from "../middleware/authMiddleware.js";
+import adminOnly from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
 
-router.get("/dashboard", protect, getAdminDashboard);
+router.get("/dashboard", protect, adminOnly, getAdminDashboard);
 
-router.get("/students", protect, getAllStudents);
+router.get("/students", protect, adminOnly, getAllStudents);
 
-router.delete("/students/:id", protect, deleteStudent);
+router.delete("/students/:id", protect, adminOnly, deleteStudent);
 
-router.get("/parents", protect, getAllParents);
+router.get("/parents", protect, adminOnly, getAllParents);
 
-router.delete("/parents/:id", protect, deleteParent);
-router.get("/parents", protect, getAllParents);
+router.delete("/parents/:id", protect, adminOnly, deleteParent);
+router.get("/parents", protect, adminOnly, getAllParents);
 
-router.delete("/parents/:id", protect, deleteParent);
-router.get("/parents", protect, getAllParents);
+router.delete("/parents/:id", protect, adminOnly, deleteParent);
+router.get("/parents", protect, adminOnly, getAllParents);
 
-router.delete("/parents/:id", protect, deleteParent);
-router.get("/parents", protect, getAllParents);
+router.delete("/parents/:id", protect, adminOnly, deleteParent);
+router.get("/parents", protect, adminOnly, getAllParents);
 
-router.delete("/parents/:id", protect, deleteParent);
+router.delete("/parents/:id", protect, adminOnly, deleteParent);
 
-router.post("/attendance", protect, markAttendance);
+router.post("/attendance", protect, adminOnly, markAttendance);
 
-router.get("/attendance", protect, getAttendance);
+router.get("/attendance", protect, adminOnly, getAttendance);
 
-router.post("/assessments", protect, createAssessment);
+router.post("/assessments", protect, adminOnly, createAssessment);
 
-router.get("/assessments", protect, getAssessments);
+router.get("/assessments", protect, adminOnly, getAssessments);
 
-router.delete("/assessments/:id", protect, deleteAssessment);
+router.delete("/assessments/:id", protect, adminOnly, deleteAssessment);
 
-router.post("/certificates", protect, createCertificate);
+router.post("/certificates", protect, adminOnly, createCertificate);
 
-router.get("/certificates", protect, getCertificates);
+router.get("/certificates", protect, adminOnly, getCertificates);
 
-router.delete("/certificates/:id", protect, deleteCertificate);
+router.delete("/certificates/:id", protect, adminOnly, deleteCertificate);
 
-router.post("/internships", protect, createInternship);
+router.post("/internships", protect, adminOnly, createInternship);
 
-router.get("/internships", protect, getInternships);
+router.get("/internships", protect, adminOnly, getInternships);
 
-router.delete("/internships/:id", protect, deleteInternship);
+router.delete("/internships/:id", protect, adminOnly, deleteInternship);
 
-router.post("/notifications", protect, createNotification);
+router.post("/notifications", protect, adminOnly, createNotification);
 
-router.post("/notifications/all", protect, sendToAllStudents);
+router.post("/notifications/all", protect, adminOnly, sendToAllStudents);
 
-router.get("/notifications", protect, getNotifications);
+router.get("/notifications", protect, adminOnly, getNotifications);
 
-router.delete("/notifications/:id", protect, deleteNotification);
+router.delete("/notifications/:id", protect, adminOnly, deleteNotification);
 
-router.get("/top-students", protect, getTopStudents);
+router.get("/top-students", protect, adminOnly, getTopStudents);
 
 export default router;
